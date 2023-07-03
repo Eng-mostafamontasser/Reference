@@ -1,0 +1,9 @@
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  tasks:
+    - name: Uncomment Line in Fstab 
+      replace:
+        path: /tmp/fstab
+        regexp: '^\s*#*\s*(/dev/mapper.*)'
+        replace: '\1'

@@ -1,0 +1,21 @@
+- hosts: "{{ hosts }}"
+  become: true
+  become_user: root
+  gather_facts: yes
+  tasks:
+   - name: check Password Policy
+     lineinfile:
+       path: /etc/login.defs
+       line: "{{ item  }}"
+       state: present
+     check_mode: yes
+     register: block_exists
+     failed_when: block_exists is changed
+     with_items:
+      - PASS_MAX_DAYS   30
+      - PASS_MIN_DAYS   1
+      - PASS_MIN_LEN    8
+      - PASS_WARN_AGE   7
+   - name: Password Policy Validation
+     debug: msg="Password Policy is configured"
+     when: block_exists is not changed

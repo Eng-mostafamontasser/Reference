@@ -1,0 +1,47 @@
+Container Technology 
+Container is isolated process on Kernel 
+How to Create Container 
+Container image
+Container repository 
+
+podman  open source tool for managing Containers 
+podman - Simple management tool for pods, containers and images
+----------------------------------------
+# podman info |more
+# vim /etc/containers/registries.conf 
+# podman search httpd
+# podman search mysql
+# podman search winserver2016
+# podman search iis
+# podman search windows10
+# podman pull rhscl/httpd-24-rhel7 
+# podman images 
+# podman run -d --name apache1 rhscl/httpd-24-rhel7
+# podman ps
+# podman inspect apache1 |grep IPAddress
+
+# podman exec -it apache1 /bin/bash
+bash-4.2$ vi /var/www/html/index.html
+bash-4.2$ ps -e 
+bash-4.2$ exit
+
+# curl 10.88.0.2:8080
+# podman stats apache1 
+# podman stop apache1 
+# podman ps
+# podman ps -a
+# podman start apache1 
+# podman restart apache1 
+# podman stop apache1 
+# podman rm apache1 
+# podman ps -a
+
+
+
+
+
+
+
+
+
+

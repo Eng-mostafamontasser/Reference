@@ -1,0 +1,15 @@
+- hosts: "{{ hosts }}"
+  become: true
+  become_user: root
+  gather_facts: true
+  tasks:
+   - name: Remove User "{{ user }}"
+     user: 
+        name: "{{ user }}"
+        state: absent
+        remove: yes
+   - name: Removing from /etc/sudoers
+     lineinfile: 
+       path: /etc/sudoers 
+       state: absent 
+       regexp: '^"{{ user }}"'

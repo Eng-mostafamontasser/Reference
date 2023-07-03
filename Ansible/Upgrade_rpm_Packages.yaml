@@ -1,0 +1,18 @@
+- hosts: "{{ hosts }}"
+  become: true
+  become_user: root
+  gather_facts: true
+  tasks:
+   - name: clean yum cashe
+     shell: yum clean all
+   - name: Refresh Repo to get new packages
+     shell: yum repolist
+   - name: Upgrade Packages
+     yum:
+       name:
+         - zlib
+         - openssl
+         - kernel
+         - nss
+       state: latest
+       update_cache: true

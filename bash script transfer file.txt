@@ -1,0 +1,64 @@
+Projet 1
+
+Clint >>>>>>>>>>>>> source 
+ip add :10.10.10.2
+
+mkdir test1 incloued file1
+
+#scp -r <dir-file> x@10.10.10.3:/
+     inside        outside to distaintion 
+
+server >>>>>>>>>>>>> distinaton 
+
+--path
+ ip add :10.10.10.3
+
+......................................................................................
+ copy file from server - inside 
+
+scp x@10.10.10.3:/home/baup /home/all-backup
+
+
+....................................
+
+
+
+ Simple shell script to download file from a FTP Server
+FTP_bash.sh
+#!/bin/bash 
+
+HOST=[HOSTNAME]  
+USER=[USERNAME]         
+PASS=[PASSWORD]           
+
+
+ftp -inv $HOST << EOF 
+user $USER $PASS 
+lcd /PATH/TO/LOCAL/DIRECTORY
+mget FILENAME* 
+bye 
+EOF  
+
+.....................
+
+#crontab -l
+* * * * * bash /root/test.sh
+
+??remote
+...........
+
+*move* any dask
+
+#!/bin/bash
+mv /path/to/source /path/to/destination
+
+
+............................
+
+# FTP LOGIN
+HOST='192.168.207.139'
+USER='root'
+PASSWORD='12345'
+
+lftp sftp://$USER:$PASSWORD@$HOST -e 'scp  /root/data1/*  /home/mostafa/data2 bye'
+

@@ -1,0 +1,48 @@
+Redhat Administration 3     RH254
+Datacenter Services 
+DHCP 67 
+-------------------------
+DHCP Server Configuration 
+Package			.rpm
+Service			systemctl
+Configuration files	/etc
+Data files 		/var
+
+
+dhcpd:x:177:177:DHCP server:/:/sbin/nologin
+/usr/share/doc/dhcp-server/dhcpd.conf.example
+
+# yum install dhcp-server			package 
+# vim /etc/dhcp/dhcpd.conf 			configuration file
+
+option domain-name "abc.com";
+option domain-name-servers 10.0.0.1;
+default-lease-time 600;
+max-lease-time 7200;
+
+log-facility local7;
+
+subnet 10.0.0.0 netmask 255.0.0.0 {
+  range 10.0.0.50 10.0.0.60;
+  option routers 10.0.0.10;
+}
+
+----------------------------------------------
+# systemctl enable dhcpd.service 
+# systemctl start dhcpd.service 
+# systemctl status dhcpd.service 
+----------------------------------------------
+# vim /var/lib/dhcpd/dhcpd.leases			data files 
+
+
+
+
+
+
+
+
+
+
+
+
+

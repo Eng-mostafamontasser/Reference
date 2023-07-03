@@ -1,0 +1,7 @@
+ scp -r /root/mdp/.  /home/mostafa/
+
+ scp   192.168.207.155:/root/test /home/devops  >>> server2
+
+        <server1>     <server1&data> <craint server2>
+
+scp -r  192.168.207.155:/root/mdp/*  /home/devops

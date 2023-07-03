@@ -1,0 +1,92 @@
+Apache Web Server	( Hosting web sites )
+
+Package 	      httpd.rpm
+Configuration Files  /etc/httpd/conf/httpd.conf
+Data files	     /var/www/html/						web sites 
+Service		systemctl enabled httpd.service 
+----------------------------------------------
+# yum install httpd*
+# vim /var/www/html/index.html
+welcome to our website
+
+# firewall-cmd --add-service=http --permanent 
+# firewall-cmd --reload 
+
+# systemctl enable httpd.service
+# systemctl start httpd.service
+# systemctl status httpd.service
+
+
+
+
+# vim /var/named/abc.com.zone 
+www     IN      A       10.0.0.2
+mail    IN      A       10.0.0.2
+portal  IN      A       10.0.0.2
+
+Name based based
+
+Virtual Host 
+ServerName
+Document root
+##################################################################
+# mkdir -p /var/www/html/web1/
+# vim /var/www/html/web1/index.html
+
+# mkdir /var/www/html/web2
+# vim /var/www/html/web2/index.html
+
+# mkdir /var/www/html/web3
+# vim /var/www/html/web3/index.html
+
+[root@RH02 ~]# cat /var/www/html/web3/index.html
+welcome to our Mail Server
+[root@RH02 ~]# cat /var/www/html/web2/index.html
+welcome to our Portal Site
+[root@RH02 ~]# cat /var/www/html/web1/index.html
+welcome to Company Web Site
+
+# rm -r /var/www/html/index.html 
+
+each web site need Virtual Host  defined by Name
+# vim /etc/httpd/conf/httpd.conf
+<VirtualHost *:80>
+ServerName      www.abc.com
+DocumentRoot    /var/www/html/web1
+</VirtualHost>
+
+<VirtualHost *:80>
+ServerName      portal.abc.com
+DocumentRoot    /var/www/html/web2
+</VirtualHost>
+
+<VirtualHost *:80>
+ServerName      mail.abc.com
+DocumentRoot    /var/www/html/web3
+</VirtualHost>
+
+# systemctl restart httpd.service 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+

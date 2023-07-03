@@ -1,0 +1,80 @@
+Configure Network Manager 
+Configure Network Teaming
+-----------------------------
+# ifconfig ens160 10.0.0.100
+# ifconfig ens160 10.0.0.100 netmask 255.0.0.0
+# ifconfig ens160 10.0.0.100/8
+# ifconfig ens160 
+# systemctl status NetworkManager.service 
+# vim /etc/sysconfig/network-scripts/ifcfg-ens160 
+# nmcli connection modify ens160 ipv4.addresses 10.0.0.101/8
+# nmcli connection modify ens160 ipv4.gateway 10.0.0.10
+# nmcli connection modify ens160 ipv4.dns 8.8.8.8
+# nmcli connection down ens160 
+# nmcli connection up ens160 
+# nmcli 
+-------------------------------
+Configure Network Teaming - Network Bonding 
+Teaming Modes " Runner " 
+  - Activebackup
+  - Loadbalance 
+  - Broadcast 
+  - LACP  
+
+Device 		ens160
+Connection 	ens160
+
+# nmcli device status 
+# nmcli connection show
+
+# nmcli connection delete 4e480e3f-0236-4b76-8d70-37af7e7536f9
+
+[root@RH01 ~]# nmcli device status 
+DEVICE      TYPE      STATE         CONNECTION 
+ens160      ethernet  disconnected  --         
+ens224      ethernet  disconnected  --      
+
+# nmcli connection add type team con-name bond0 ifname bond0 config '{"runner": {"name":"activebackup"}}'
+# nmcli connection modify bond0 ipv4.addresses 10.0.0.100/8
+# nmcli connection modify bond0 ipv4.gateway 10.0.0.10
+# nmcli connection modify bond0 ipv4.dns 8.8.8.8
+# nmcli connection modify bond0 ipv4.method manual
+# nmcli connection modify bond0 connection.autoconnect yes
+
+# nmcli connection add type team-slave con-name bond0-slave0 ifname ens160 master bond0
+# nmcli connection add type team-slave con-name bond0-slave1 ifname ens224 master bond0
+# nmcli connection up bond0
+# teamdctl bond0 state
+
+# nmcli device disconnect ens160 
+# nmcli connection show 
+# nmcli device status 
+# teamdctl bond0 state
+# nmcli connection down bond0
+# nmcli connection up bond0
+
+
+remove Team
+# nmcli connection down bond0
+# nmcli connection delete bond0-slave0 bond0-slave1 
+# nmcli connection delete bond0
+# nmcli connection show 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

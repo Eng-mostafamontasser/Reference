@@ -1,0 +1,29 @@
+- hosts: "{{ hosts }}"
+  gather_facts: false
+
+  vars:
+    current_package_version: "{{ ansible_facts.packages[search_package][0].version.split('-') | first }}"
+
+  tasks:
+    - name: This test playbook requires variables search_package and compare_version
+      ansible.builtin.assert:
+        that:
+          - search_package is defined
+          - compare_version is defined
+        msg: please define the search_package and compare_version variables
+
+    - name: Get package facts
+      ansible.builtin.package_facts:
+
+    - name: Facts for {{ search_package }} must exist to go on
+      ansible.builtin.assert:
+        that: ansible_facts.packages[search_package] is defined
+        msg: Please use in search_package a package name which exist on the sytem
+
+    - name: Show raw facts about package {{ search_package }}
+      ansible.builtin.debug:
+        var: ansible_facts.packages[search_package]
+
+    - name: Show version number we actually want to work with
+      ansible.builtin.debug:
+        var: current_package_version

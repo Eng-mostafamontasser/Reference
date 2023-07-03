@@ -1,0 +1,53 @@
+https://www.2daygeek.com/enable-rhel-subscription-red-hat-subscription-management/
+
+
+
+#for i in {1..2};do ping  -c 3 ansible$i; done
+#for i in {1..2};do scp /etc/hosts ansible"$i":/etc/hosts; done
+#for i in {1..2};do ssh ansible"$i" "python3 --version"; done
+#for i in {1..2};do ssh ansible"$i" "useradd adsible"; done
+#for i in {1..2};do ssh  ansible"$i" "echo 123 | passwd --stdin ansible"; done
+#for i in {1..2};do ssh ansible"$i" "echo 'ansible ALL=(ALL)	NOPASSWD: ALL' > /etc/sudoers.d/ansible"; done
+for i in {1..2};do ssh ansible"$i" "yum install httpd -y"; done
+
+
+.............................
+* inventory file                      a list of managed notes to buch servis 
+
+# ansible --version
+#ansible -v all --list-hosts
+# /etc/ansible/ansible.cfg 
+
+
+
+..........................................
+#rpm -q -l ansible | grep modules |head
+# ansible all -m user -a 'name=blue'        ... add user  -m >>>>  modules
+#ansible-doc -l |wc -l       ... modules
+#ansible-doc user          > docomentation 
+#ansible all -m command -a 'systemctl status sshd'
+#ansible all -m shell -a 'ls -l /etc | grep passwd'                        grep or |
+#ansible all -m command -a 'name=red state=absent'  > delet
+                                            prsent >> add
+#ansible ansible1 -m service -a 'name=httpd  state=enable'
+#ansible-doc service                          enable=no  
+# vim ansible.cfg
+# ansible check -m command -a "systemctl status httpd" -i hosts
+
+
+
+
+
+...................................................
+
+**playbook**
+#vim play1.yml   
+test check
+#ansible-playbook play1.yml --syntax-check    
+#ansible-playbook -C play1.yml          >>> run file 
+
+
+ansible-playbook -i hosts2  site.yml  --tags="rule_4.2.2.6"
+
+ansible-playbook -i hosts -e "hosts=app" check_tz.yaml
+

@@ -1,0 +1,80 @@
+Let’s name this file as movefiles.sh
+Here is the skeleton of the shell script file. We will see working example of the script later on.
+
+
+#!/bin/bash
+
+
+#Connect to windows ftp server
+#Declare variables and assign them related values which will be used for remote
+#server connection
+
+
+HOST=> #This is the FTP server’s host or IP address.
+USER=> #This is the FTP user that has access to the server.
+PASS=> #This is the password for the FTP user.
+
+
+#Create connection to remote server
+ftp -inv $HOST user $USER $PASS
+binary
+
+
+#Now as you are in remote environment, mention destination folder name where you
+#want to transfer desired files
+
+
+cd />
+lcd />
+
+
+#Copy files from source to destination
+mput *.*
+bye
+EOF
+
+
+#Optional, if you want to delete source files, once they get copied to desired
+#destination network
+cd />
+rm *.*
+Here is the example of working shell script i.e. movefiles.sh
+
+
+#!/bin/bash
+
+
+# Connect to windows ftp server
+HOST=192.168.1.204
+USER=ftpuser
+PASS=test123
+
+
+ftp -inv $HOST user $USER $PASS
+binary
+# Destination folder on remote network
+cd /vrrupload
+
+
+# Source folder on local network
+lcd /export/home/ftpuser/files
+mput *.*
+bye
+
+
+EOF
+
+
+# Delete source files, once they get copied to desired destination network
+cd /export/home/ftpuser/files
+rm *.*
+Put this shell script into home folder of solaris user. In our case, the path will be like
+
+
+/home/ftpuser/movefiles.sh
+If we want to transfer files over cross-networks on regular intervals, we can set crontab for this.
+
+We can achieve it by using “crontab –e “ linux command and setting something like this:
+
+
+> > * * * sh /home/ftpuser/movefiles.sh > /home/ftpuser/files-out_`date +%Y-%m-%d_%H:%M%S`.log 2>&1

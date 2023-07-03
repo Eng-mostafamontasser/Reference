@@ -1,0 +1,142 @@
+Shell Script
+Conditioning Scripts
+Case Statment 
+
+syntax 
+
+case $var in 
+Value1)
+command1
+;;
+Value2)
+command2
+;;
+Value3|Value4|value5)
+command3
+;;
+*)
+command4
+;;
+esac 
+--------------------------------------------
+Example1
+#!/bin/bash
+echo please enter your option press -h for help 
+read option
+case $option in
+-t)
+echo the time is :
+date
+;;
+-n)
+echo the server name is :
+hostname
+;;
+-l)
+echo the current login user is :
+echo $LOGNAME
+;;
+-i)
+echo the IP Addresses is :
+ifconfig |grep -w inet
+;;
+-h)
+echo choose your Options in -t -n -l -i
+;;
+*)
+echo invalid Option choose -h for help
+;;
+esac
+--------------------------------------------------------------
+Postional parameter 			$1      $2
+#!/bin/bash
+case $1 in
+-t)
+echo the time is :
+date
+;;
+-n)
+echo the server name is :
+hostname
+;;
+-l)
+echo the current login user is :
+echo $LOGNAME
+;;
+-i)
+echo the IP Addresses is :
+ifconfig |grep -w inet
+;;
+-h)
+echo choose your Options in -t -n -l -i
+;;
+*)
+echo invalid Option choose -h for help
+;;
+esac
+--------------------------------------------------------------------
+Modify System Variable " $PATH "
+run scripts as command 
+
+# echo $PATH
+/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/root/bin
+
+# PATH=$PATH:/scripts
+# echo $PATH
+/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/root/bin:/scripts
+# sysinfo -l
+
+--------------------------------------------------------------------
+Trap statment 
+ignore Kill Signals 
+
+#!/bin/bash
+trap 'echo "     No Way ......... " ' INT			<<<<< trap statment
+echo please enter your fname
+read fname
+echo please enter your lname
+read lname
+echo please enter your city
+read city
+echo welcome $fname $lname in $city
+echo your email address is $fname.$lname@itoutbreak.com
+echo you branch is $city branch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

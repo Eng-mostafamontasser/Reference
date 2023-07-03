@@ -1,0 +1,30 @@
+- hosts: "{{ hosts }}"
+  become: true
+  become_user: root
+  gather_facts: true
+  tasks:
+     - name: Copy the file from master
+       copy: src=test.sh dest=/tmp mode=0777
+     - name: run Script
+       shell: "sh /tmp/test.sh"
+       ignore_errors: true
+     - name: find the output file
+       shell: "cd /tmp; find *.html"
+       register: files_to_copy
+     - debug:
+        var: files_to_copy
+     - name: Get Reports
+       fetch: src=/tmp/{{ item }} dest=/tmp/ mode=0777 flat=yes
+       with_items: "{{ files_to_copy.stdout | replace(\"'\",'')}}"
+     - name: create variable for the attachments
+       shell: "ls /tmp/*html"
+       register: command_output
+     - name: Send Emails to a bunch of users, with Playbook Report as an attachment.
+       mail:
+        host: 10.10.101.108
+        port: 25
+        subject: Ansible Playbook Report
+        body: This is an Email generated using Ansible after execution of task.
+        from: ansible@mdp-eg.com (Ansible Automates)
+        to: Amr Mohamed Nabil <Amr.Mohamed@mdp-eg.com>
+        attach: "{{ command_output.stdout_lines | join(',') }}"

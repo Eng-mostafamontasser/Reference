@@ -1,0 +1,8 @@
+- hosts: "{{ hosts }}"
+  gather_facts: true
+  tasks:
+   - name: Replace Character in Grub configuration 
+     replace:
+       path: /etc/grub2.cfg
+       regexp: ':'
+       replace: "#"

@@ -1,0 +1,30 @@
+
+replist
+
+.................................
+mkdir /cdrom
+mount /dev/cdrom /cdrom
+mv /etc/yum.repos.d/*.repo /tmp/
+vi /etc/yum.repos.d/local.repo
+
+
+................
+[LocalRepo_BaseOS]
+name=LocalRepository_BaseOS
+baseurl=file:///cdrom/BaseOS
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+[LocalRepo_AppStream]
+name=LocalRepository_AppStream
+baseurl=file:///cdrom/AppStream
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+
+yum clean all
+
+
+yum install vsftpd

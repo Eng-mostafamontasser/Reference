@@ -1,0 +1,14 @@
+- hosts: "{{ hosts }}"
+  become: true
+  become_user: root
+  gather_facts: false
+  tasks:
+    - name: Confirm zdump 
+      shell: "date"
+      register: zd
+    - debug: msg="{{ zd.stdout_lines  }}"
+    - name: Confirm date
+      shell: "timedatectl"
+      register: dt
+    - debug: msg="{{ dt.stdout_lines  }}"
+

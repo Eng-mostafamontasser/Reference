@@ -1,0 +1,26 @@
+- hosts: "{{ hosts }}"
+  become: true
+  become_user: root
+  gather_facts: true
+  tasks:
+    - name: Install the latest version of tzdata
+      ansible.builtin.yum:
+        name: tzdata
+        state: latest
+    - name: Confirm DST enabled
+      shell: "timedatectl"
+      register: output
+    - debug: msg="{{ output.stdout_lines }}"
+    - name: Confirm zdump 
+      shell: "zdump -v Africa/Cairo | grep 2023"
+      register: zd
+    - debug: msg="{{ zd.stdout_lines  }}"
+    - name: fill os information
+      lineinfile:
+        path: "/tmp/o.csv"
+        line: "{{ ansible_hostname }},\
+          {{ ansible_distribution }},\
+          {{ ansible_distribution_version }},\
+          {{ zd.stdout_lines }}"
+      throttle: 1
+      delegate_to: localhost

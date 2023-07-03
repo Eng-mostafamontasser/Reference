@@ -1,0 +1,6 @@
+# Connect to SFTP server using a password
+open sftp://user:password@example.com/ -hostkey="ssh-rsa 2048 xxxxxxxxxxx..."
+# Upload file
+put d:\examplefile.txt /home/user/
+# Exit WinSCP
+exit

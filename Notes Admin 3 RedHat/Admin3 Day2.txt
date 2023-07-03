@@ -1,0 +1,77 @@
+Configure DNS Server
+Package 	bind ( berkely internet Naming Domain ) Linux DNS  
+Service		Named.service 
+Configuration files	/etc/named
+Data Files zone files  /var/named 
+
+Configure DNS Server
+# yum install bind*
+# tail -1 /etc/passwd
+named:x:25:25:Named:/var/named:/bin/false
+# vim /etc/named.conf 					modify the following Lines 
+	listen-on port 53 { 127.0.0.1; any; };
+        allow-query     { localhost; any; };
+        forwarders      { 8.8.8.8; };
+
+zone "abc.com" IN {					zone details
+        type master;
+        file "abc.com.zone";
+};
+
+# named-checkconf 
+-----------------------------------------------
+# cp /var/named/named.empty /var/named/abc.com.zone
+# chgrp named /var/named/abc.com.zone 
+
+# vim /var/named/abc.com.zone
+
+$TTL 3H
+@       IN SOA  abc.com. rname.invalid. (
+                                        0       ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+        NS      DNS1.abc.com.
+        A       127.0.0.1
+        AAAA    ::1
+DNS1    IN      A       10.0.0.1
+web1    IN      A       10.0.0.2
+www     IN      CNAME   web1.abc.com.
+mail    IN      A       10.0.0.10
+-------------------------------------------------
+# systemctl enable named.service
+# systemctl start named.service
+# systemctl status named.service
+-------------------------------------------------
+# firewall-cmd --add-service=dns --permanent 
+# firewall-cmd --reload 
+# firewall-cmd --list-services 
+######################################################################
+Configure DNS Client:- 
+# cat /etc/resolv.conf 
+# nmcli connection modify ens160 ipv4.dns 10.0.0.1
+# nmcli connection down ens160
+# nmcli connection up ens160
+# cat /etc/resolv.conf 
+# ping www.abc.com
+# nslookup www.abc.com
+# nslookup mail.abc.com
+# nslookup dns1.abc.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

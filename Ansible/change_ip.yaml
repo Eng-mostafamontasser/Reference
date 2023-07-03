@@ -1,0 +1,20 @@
+- hosts: "{{ hosts  }}"
+  gather_facts: true
+  tasks:
+    - name: Get Interface Name
+      shell: "sudo ip link show | grep mode | sed 's/://g' | awk '{print $2}' | grep -v lo"
+      register: a 
+    - debug: 
+       msg: '{{ a.stdout_lines[0] }}'
+    - name: change IP
+      lineinfile:
+        path: /etc/sysconfig/network-scripts/ifcfg-{{ a.stdout_lines[0] }}
+        regexp: '^IPADDR='
+        line: 'IPADDR={{ primary_ip }}'
+        backup: yes
+    - name: Add Secondary IP
+      ansible.builtin.blockinfile:
+        path: /etc/sysconfig/network-scripts/ifcfg-{{ a.stdout_lines[0] }}
+        block: |
+           IPADDR2=  {{ secondary_ip }}
+           PREFIX2=24

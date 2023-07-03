@@ -1,0 +1,102 @@
+Configure iscsi Storage (IP SAN )
+iscsi 3260 
+Block based Storage 
+
+Backstore = Block storage 
+Target 
+LAN 
+ACL 
+iqn.2021-10.example.com:t1
+-----------------------------------------------
+## iscsi target Configuration :- 
+Package
+service 
+
+# yum install targetcli
+# fdisk /dev/nvme0n2 
+# systemctl enable target.service
+# systemctl start target.service
+# firewall-cmd --add-port=3260/tcp --permanent 
+# firewall-cmd --reload 
+
+[root@RH01 ~]# targetcli 
+Warning: Could not load preferences file /root/.targetcli/prefs.bin.
+targetcli shell version 2.1.fb49
+Copyright 2011-2013 by Datera, Inc and others.
+For help on commands, type 'help'.
+
+
+/> backstores/block create block1 /dev/nvme0n2p1 			<<<< create Backstore
+Created block storage object block1 using /dev/nvme0n2p1.
+/> iscsi/ create iqn.2021-11.com.abc:t1					<<<< create Target
+Created target iqn.2021-11.com.abc:t1.
+Created TPG 1.
+Global pref auto_add_default_portal=true
+Created default portal listening on all IPs (0.0.0.0), port 3260.
+/> iscsi/iqn.2021-11.com.abc:t1/tpg1/luns create /backstores/block/block1 	<<<< create LUN
+Created LUN 0.
+/> iscsi/iqn.2021-11.com.abc:t1/tpg1/acls create iqn.2021-11.com.abc:client1	<<<< create ACL
+Created Node ACL for iqn.2021-11.com.abc:client1
+Created mapped LUN 0.
+
+----------------------------------------------------------------------------------------------
+## iscsi initator Configuration :- 
+
+# yum install iscsi-initiator-utils.i686 
+# vim /etc/iscsi/initiatorname.iscsi 
+InitiatorName=iqn.2021-11.com.abc:client1
+
+# iscsiadm --mode discovery --type sendtargets --portal 10.0.0.1		<<<< dicover targets 			
+# iscsiadm --mode node --targetname iqn.2021-11.com.abc:t1 --portal 10.0.0.1 --login  <<<< connect to target
+
+# pvcreate /dev/sda 					<<<< apply disk managment configuration 
+# vgcreate vg0 /dev/sda 
+# lvcreate --name lv0 --size 19G vg0 
+# mkdir /m1
+# mkfs.ext4 /dev/vg0/lv0 
+# mount /dev/vg0/lv0 /m1
+# df -h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

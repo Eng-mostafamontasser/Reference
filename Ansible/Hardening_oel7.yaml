@@ -1,0 +1,436 @@
+- hosts: localhost
+  connection: local
+  tasks:
+      - name: "Ensure sticky bit is set on all world-writable directories"
+        shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 2>/dev/null | xargs chmod a+t
+        args:
+            warn: false
+        changed_when: false
+        failed_when: false
+      
+      - name: "Disable USB Storage"
+        block:
+            - name: "Disable USB Storage | Edit modprobe config"
+              lineinfile:
+                  dest: /etc/modprobe.d/CIS.conf
+                  regexp: "^(#)?install usb-storage(\\s|$)"
+                  line: "install usb-storage /bin/true"
+                  create: true
+                  owner: root
+                  group: root
+                  mode: 0600
+      
+            - name: "Disable USB Storage | Edit modprobe config"
+              modprobe:
+                  name: usb-storage
+                  state: absent
+      
+      - name: Clean Banner Files
+        file: 
+           path: "{{ item }}"
+           state: absent
+        with_items:
+           - /etc/motd
+           - /etc/issue.net
+           - /etc/issue
+        ignore_errors: yes
+           
+      - name: Insert The Banner Message
+        blockinfile:
+           path: "{{ item }}"
+           marker: ""
+           create: "yes"
+           mode: "0600"
+           block: |
+                This system is for the use of authorized users only. Individuals using this computer system without authority, or in excess of their authority, are subject to having all of their activities on this system monitored and recorded by system personnel. In the course of monitoring individuals improperly using this system, or in the course of system maintenance, the activities of authorized users may also be monitored. Anyone using this system expressly consents to such monitoring and is advised that if such monitoring reveals possible criminal activity, system personnel may provide the evidence of such monitoring to law enforcement officials.
+           state: present
+        with_items:
+           - /etc/issue.net
+           - /etc/issue
+           - /etc/motd
+
+     - name: comment old conf
+       replace:
+         dest: /etc/rsyslog.conf
+         regexp: '^(?!#)(.*@10.*)'
+         replace: '#\1'
+     - name: Adding New Qradar Server To rsyslog File
+       lineinfile:
+         path: /etc/rsyslog.conf
+         line: "*.*\t@@{{IP}}:541"
+         insertafter: '"*.info"'
+
+     - name: Restart rsyslog Service
+       service:
+          name: rsyslog
+          state: restarted
+      
+      - name: "1.2.3 | PATCH | Ensure gpgcheck is globally activated"
+        block:
+            - name: "1.2.3 | AUDIT | Ensure gpgcheck is globally activated"
+              find:
+                  paths: /etc/yum.repos.d
+                  patterns: "*.repo"
+              changed_when: false
+              register: yum_repos
+      
+            - name: "1.2.3 | PATCH | Ensure gpgcheck is globally activated"
+              replace:
+                  path: "{{ item.path }}"
+                  regexp: "^gpgcheck=0"
+                  replace: "gpgcheck=1"
+              loop: "{{ yum_repos.files }}"
+              loop_control:
+                  label: "{{ item.path }}"
+      - name: Get All files under /etc/profile.d
+        command: "ls /etc/profile.d/"
+        register: list_profile
+      - name : Change Idle Timeout to be 15 min
+        lineinfile:
+           dest: "{{ item }}"
+           state: "present"
+           line: "export TMOUT=900"
+        with_items:
+           - /etc/profile
+           - /etc/bashrc
+           - list_profile.stdout_lines
+           
+      
+      
+      - name: "Ensure password creation requirements are configured"
+        lineinfile:
+            state: present
+            dest: "/etc/security/pwquality.conf"
+            regexp: '^{{ item.key }}'
+            line: '{{ item.key }} = {{ item.value }}'
+        with_items:
+            - { key: 'minlen', value: '14' }
+            - { key: 'minclass', value: '4' }
+      - name: Ensure lockout for failed password attempts is configured  
+        block:
+            - name: "Ensure lockout for failed password attempts is configured | Add deny count and unlock time for preauth"
+              lineinfile:
+                  dest: "/etc/pam.d/{{ item }}"
+                  state: present
+                  line: "auth        required      pam_faillock.so preauth audit silent deny=5 unlock_time=900"
+                  insertafter: '^#?auth ?'
+              loop:
+                  - "system-auth"
+                  - "password-auth"
+      
+            - name: "Ensure lockout for failed password attempts is configured | Add success and default settings to pam_unix.so"
+              lineinfile:
+                  dest: "/etc/pam.d/{{ item }}"
+                  state: present
+                  line: "auth        [success=1 default=bad] pam_unix.so"
+                  insertafter: '^#?auth ?'
+              loop:
+                  - "system-auth"
+                  - "password-auth"
+      
+            - name: "Ensure lockout for failed password attempts is configured | Add default, deny count, and unlock times for authfail"
+              lineinfile:
+                  dest: "/etc/pam.d/{{ item }}"
+                  state: present
+                  line: "auth        [default=die] pam_faillock.so authfail audit deny=5 unlock_time=900"
+                  insertafter: '^#?auth ?'
+              loop:
+                  - "system-auth"
+                  - "password-auth"
+      
+            - name: "Ensure lockout for failed password attempts is configured | Add deny count and unlock times to authsucc"
+              lineinfile:
+                  dest: "/etc/pam.d/{{ item }}"
+                  state: present
+                  line: "auth        sufficient    pam_faillock.so authsucc audit deny=5 unlock_time=900"
+                  insertafter: '^#?auth ?'
+              loop:
+                  - "system-auth"
+                  - "password-auth"
+      
+            - name: "Ensure lockout for failed password attempts is configured | Activate deny count and unlock times to failed password"
+              lineinfile:
+                  dest: "/etc/pam.d/{{ item }}"
+                  state: present
+                  line: "account     required      pam_faillock.so"
+                  firstmatch: true
+                  regexp: '^\s*account\s+required\s+pam_faillock.so\s*'
+                  insertbefore: '^#?account ?'
+              loop:
+                  - "system-auth"
+                  - "password-auth"
+      
+      - name : Hardening The Password Policy
+        lineinfile:
+           dest: "/etc/login.defs"
+           regexp: "{{ item.reg }}"
+           state: "present"
+           line: "{{ item.data }}"
+        with_items:
+            - { reg: '^PASS_MAX_DAYS*',  data: "PASS_MAX_DAYS   365" }
+            - { reg: '^PASS_MIN_DAYS*',  data: "PASS_MIN_DAYS   1" }
+      - name: "Ensure users' dot files are not group or world-writable"
+        block:
+           - name: "Ensure users' dot files are not group or world-writable | Check for files"
+             shell: find /home/ -name "\.*" -perm /g+w,o+w
+             changed_when: false
+             failed_when: false
+             register: rhel7cis_6_2_14_audit
+            
+           - name: "Ensure users' dot files are not group or world-writable | Alert on files found"
+             debug:
+                  msg: "Good news! We have not found any group or world-writable dot files on your sytem"
+             failed_when: false
+             changed_when: false
+            
+           - name: "6.2.14 | PATCH | Ensure users' dot files are not group or world-writable | Changes files if configured"
+             file:
+               path: '{{ item }}'
+               mode: go-w
+             with_items: "{{ rhel7cis_6_2_14_audit.stdout_lines }}"
+             when:
+               - rhel7cis_6_2_14_audit.stdout is defined
+      
+      
+      - name: "Ensure SSH MaxStartups is configured"
+        lineinfile:
+            state: present
+            dest: /etc/ssh/sshd_config
+            regexp: "^#MaxStartups|^MaxStartups"
+            line: 'MaxStartups 10:30:60'
+            validate: /usr/sbin/sshd -T -C user=root -C host="$(hostname)" -C addr="$(grep $(hostname) /etc/hosts | awk '{print $1}')" -f %s
+
+      - name: "Ensure SSH Idle Timeout Interval is configured"
+        block:
+            - name: "Ensure SSH Idle Timeout Interval is configured | Add line in sshd_config for ClientAliveInterval"
+              lineinfile:
+                  state: present
+                  dest: /etc/ssh/sshd_config
+                  regexp: "^#ClientAliveInterval|^ClientAliveInterval"
+                  line: "ClientAliveInterval 900"
+                  validate: /usr/sbin/sshd -T -C user=root -C host="$(hostname)" -C addr="$(grep $(hostname) /etc/hosts | awk '{print $1}')" -f %s
+              notify:
+                  - restart sshd
+            - name: "Ensure SSH Idle Timeout Interval is configured | Ensure SSH ClientAliveCountMax set to <= 3"
+              lineinfile:
+                  state: present
+                  dest: /etc/ssh/sshd_config
+                  regexp: "^#ClientAliveCountMax|^ClientAliveCountMax"
+                  line: "ClientAliveCountMax 0"
+      - name: "Ensure SSH AllowTcpForwarding is disabled"
+        lineinfile:
+            state: present
+            dest: /etc/ssh/sshd_config
+            regexp: "^#AllowTcpForwarding|^AllowTcpForwarding"
+            line: 'AllowTcpForwarding no'
+            validate: /usr/sbin/sshd -T -C user=root -C host="$(hostname)" -C addr="$(grep $(hostname) /etc/hosts | awk '{print $1}')" -f %s
+      - name: "Ensure only strong MAC algorithms are used"
+        lineinfile:
+            state: present
+            dest: /etc/ssh/sshd_config
+            regexp: '^MACs'
+            insertbefore: "# Accept locale-related environment variables"
+            line: "MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256"
+            validate: /usr/sbin/sshd -T -C user=root -C host="$(hostname)" -C addr="$(grep $(hostname) /etc/hosts | awk '{print $1}')" -f %s
+      - name: "Ensure journald is configured to send logs to rsyslog"
+        lineinfile:
+            path: /etc/systemd/journald.conf
+            regexp: '^[F|f]orward[T|t]o[S|s]yslog='
+            line: "ForwardToSyslog=yes"
+      - name: Restart SSH Service
+        service:
+          name: sshd
+          state: restarted    	  
+      - name: "Ensure journald is configured to compress large log files"
+        lineinfile:
+            path: /etc/systemd/journald.conf
+            regexp: '^[C|c]ompress='
+            line: "Compress=yes"
+      - name: "Ensure journald is configured to write logfiles to persistent disk"
+        lineinfile:
+            path: /etc/systemd/journald.conf
+            regexp: '^[S|s]torage='
+            line: "Storage=persistent"
+      - name: "Audit SUID executables"
+        block:
+            - name: "Audit SUID executables | Find all SUID executables"
+              shell: df {{ item.mount }} -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -4000
+              failed_when: false
+              changed_when: false
+              register: rhel_07_6_1_13_perms_results
+              with_items: "{{ ansible_mounts }}"
+              loop_control:
+                  label: "{{ item.mount }}"
+      
+            - name: "Audit SUID executables |  Alert no SUID executables exist"
+              debug:
+                  msg: "Good news! We have not found any SUID executable files on your system"
+              failed_when: false
+              changed_when: false
+              when:
+                  - rhel_07_6_1_13_perms_results.stdout is not defined
+      
+            - name: "Audit SUID executables |  Alert SUID executables exist"
+              debug:
+                  msg: "WARNING!! Manual intervention is required -- SUID set on items in {{ item.item.mount }}: {{ item.stout_lines | join(', ') }}"
+              with_items: "{{ rhel_07_6_1_13_perms_results.stdout_lines }}"
+              when:
+                  - rhel_07_6_1_13_perms_results.stdout is defined
+      
+      - name: "Audit SGID executables"
+        block:
+            - name: "6.1.14 | AUDIT | Audit SGID executables | Find all SGID executables"
+              shell: df {{ item.mount }} -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -2000
+              failed_when: false
+              changed_when: false
+              register: rhel_07_6_1_14_perms_results
+              with_items: "{{ ansible_mounts }}"
+              loop_control:
+                  label: "{{ item.mount }}"
+      
+            - name: "Audit SGID executables |  Alert no SGID executables exist"
+              debug:
+                  msg: "Good news! We have not found any SGID executable files on your system"
+              failed_when: false
+              changed_when: false
+              when:
+                  - rhel_07_6_1_14_perms_results.stdout is not defined
+      
+            - name: "Audit SGID executables |  Alert SGID executables exist"
+              debug:
+                  msg: "WARNING!! Manual intervention is required -- SGID set on items in {{ item.item.mount }}: {{ item.stout_lines | join(', ') }}"
+              with_items: "{{ rhel_07_6_1_14_perms_results.stdout_lines }}"
+              when:
+                  - rhel_07_6_1_14_perms_results.stdout is defined
+      - name: "Audit system file permissions"
+        block:
+            - name: "Audit system file permissions | Audit the packages"
+              shell: rpm -Va --nomtime --nosize --nomd5 --nolinkto
+              changed_when: false
+              failed_when: false
+              check_mode: false
+              register: rhel7cis_6_1_1_packages_rpm
+              tags:
+                  - skip_ansible_lint
+      
+      - name: "Ensure sudo commands use pty"
+        lineinfile:
+           dest: /etc/sudoers
+           regexp: '^Defaults    use_pty'
+           line: 'Defaults    use_pty'
+           state: present
+           validate: '/usr/sbin/visudo -cf %s'
+      - name: "Ensure no world writable files exist"
+        block:
+           - name: "Ensure no world writable files exist | Get list of world-writable files"
+             shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -0002
+             failed_when: false
+             changed_when: false
+             register: rhel_07_6_1_10_perms_results     
+           - name: "Ensure no world writable files exist | Alert no world-writable files exist"
+             debug:
+                 msg: "Good news! We have not found any world-writable files on your system"
+             failed_when: false
+             changed_when: false
+             when:
+                 - rhel_07_6_1_10_perms_results.stdout is not defined
+      
+           - name: "Ensure no world writable files exist | Adjust world-writable files if they exist (Configurable)"
+             file:
+                 path: '{{ item }}'
+                 mode: o-w
+                 state: touch
+             with_items: "{{ rhel_07_6_1_10_perms_results.stdout_lines }}"
+
+
+      
+      - name: Ensure XDCMP is not enabled
+        lineinfile:
+            path: /etc/gdm/custom.conf
+            regexp: ^Enable(\s|)=(\s|)true
+            state: absent
+            create: true
+            owner: root
+            group: root
+            mode: 0644
+      - name: "Ensure login and logout events are collected"
+        block:
+           - name: "Ensure login and logout events are collected | Check for pam_fallock or pam_tally2"
+             shell: grep pam_tally2.so /etc/pam.d/system-auth /etc/pam.d/password-auth
+             changed_when: false
+             failed_when: false
+             register: rhel7cis_4_1_7_tally2_check
+           - name: "Ensure login and logout events are collected | Set login and logout events"
+             template:
+                 src: logins.rules.j2
+                 dest: /etc/audit/rules.d/logins.rules
+                 owner: root
+                 group: root
+                 mode: 0600
+ 
+      - name: "Ensure permissions on all logfiles are configured"
+        command: find /var/log -type f -exec chmod g-wx,o-rwx "{}" +
+        changed_when: false
+        failed_when: false
+
+      - name: "Ensure sudo log file exists"
+        lineinfile:
+            dest: /etc/sudoers
+            regexp: '^Defaults    logfile=/var/log/sudo.log'
+            line: 'Defaults    logfile=/var/log/sudo.log'
+            state: present
+            validate: '/usr/sbin/visudo -cf %s'
+      - name: "Ensure audit_backlog_limit is sufficient"
+        block:
+            - name: "Ensure audit_backlog_limit is sufficient | Grep GRUB_CMDLINE_LINUX parameter"
+              shell: grep 'GRUB_CMDLINE_LINUX=' /etc/default/grub | cut -f2 -d'"'
+              changed_when: false
+              failed_when: false
+              check_mode: false
+              register: rhel7cis_4_1_2_4_grub_cmdline_linux_settings
+      
+            - name: "Ensure audit_backlog_limit is sufficient | Set audit_backlog_limit if not configured"
+              lineinfile:
+                  dest: /etc/default/grub
+                  regexp: '^GRUB_CMDLINE_LINUX='
+                  line: 'GRUB_CMDLINE_LINUX="{{ rhel7cis_4_1_2_4_grub_cmdline_linux_settings.stdout }} audit_backlog_limit=8192"'
+              register: grub_backup_new
+              notify: grub2cfg
+              when: '"audit_backlog_limit" not in rhel7cis_4_1_2_4_grub_cmdline_linux_settings.stdout'
+      
+            - name: "Ensure audit_backlog_limit is sufficient | Adjust audit_backlog_limit if exists"
+              replace:
+                  dest: /etc/default/grub
+                  regexp: 'audit_backlog_limit=([^\D]+)'
+                  replace: 'audit_backlog_limit=8192'
+              register: grub_backup_updated
+              when: '"audit_backlog_limit" in rhel7cis_4_1_2_4_grub_cmdline_linux_settings.stdout'
+      - name: "Audit system file permissions"
+        block:
+           - name: "Audit system file permissions | Audit the packages"
+             shell: rpm -Va --nomtime --nosize --nomd5 --nolinkto
+             changed_when: false
+             failed_when: false
+             check_mode: false
+             register: rhel7cis_6_1_1_packages_rpm
+           - name: "Audit system file permissions | Create list and warning"
+             block:
+                 - name: "Audit system file permissions | Add file discrepancy list to system"
+                   copy:
+                       dest: "{{ rhel7cis_rpm_audit_file }}"  # noqa template-instead-of-copy
+                       content: "{{ rhel7cis_6_1_1_packages_rpm.stdout }}"
+                       owner: root
+                       group: root
+                       mode: 0640
+      
+                 - name: "6.1.1 | AUDIT | Audit system file permissions | Message out alert for package descrepancies"
+                   debug:
+                       msg: |
+                           "WARNING!! You have some package descrepancies issues.
+                            The file list can be found in {{ rhel7cis_rpm_audit_file }}"
+                   when: rhel7cis_6_1_1_packages_rpm.stdout|length > 0
+      
+                 - name: "6.1.1 | AUDIT | Audit system file permissions | Message out no package descrepancies"
+                   debug:
+                       msg: "Good News! There are no package descrepancies"
+             when: rhel7cis_6_1_1_packages_rpm.stdout|length == 0

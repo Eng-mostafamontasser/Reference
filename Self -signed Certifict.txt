@@ -1,0 +1,108 @@
+
+   mkdir Certifict
+   cd Certifict/
+sudo apt update
+   sudo ufw allow "Apache Full"
+ sudo systemctl restart apache2
+  sudo a2enmod ssl
+  systemctl restart apache2
+ openssl genrsa -des3 -out myCA.key 2048
+
+ ls
+  cat myCA.key
+  openssl req -x509 -new -nodes -key myCA.key -sha256 -days 3650 -out myCA.pem
+                     Common Name (e.g. server FQDN or YOUR name) []:myprivate.ca
+ ls
+ openssl genrsa -out tls.key 2048
+  ls
+  cat tls.key
+  openssl req -new  -key tls.key  -out  tls.csr
+		Common Name (e.g. server FQDN or YOUR name) []:mytest.website
+  ls
+  openssl  x509 -req -in  tls.csr -CA myCA.pem -CAkey myCA.key -CAcreateserial  -out tls.crt -days 365 -sha256
+    ls
+   cat tls.crt
+   cd
+  cd Certifict/
+ ls
+openssl x509 -text -in tls.crt | less
+
+.........................................................................................................
+#Step 1 — Enabling 
+
+sudo apt update
+sudo apt install apache2
+sudo ufw allow "Apache Full"
+sudo a2enmod ssl
+sudo systemctl restart apache2
+
+##Step 2 — Create the SSL Certificate
+
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt
+    
+    openssl: This is the basic command line tool for creating and managing OpenSSL certificates, keys, and other files.
+    req: This subcommand specifies that we want to use X.509 certificate signing request (CSR) management. The “X.509” is a public key infrastructure standard that SSL and TLS adheres to for its key and certificate management. We want to create a new X.509 cert, so we are using this subcommand.
+    -x509: This further modifies the previous subcommand by telling the utility that we want to make a self-signed certificate instead of generating a certificate signing request, as would normally happen.
+    -nodes: This tells OpenSSL to skip the option to secure our certificate with a passphrase. We need Apache to be able to read the file, without user intervention, when the server starts up. A passphrase would prevent this from happening because we would have to enter it after every restart.
+    -days 365: This option sets the length of time that the certificate will be considered valid. We set it for one year here.
+    -newkey rsa:2048: This specifies that we want to generate a new certificate and a new key at the same time. We did not create the key that is required to sign the certificate in a previous step, so we need to create it along with the certificate. The rsa:2048 portion tells it to make an RSA key that is 2048 bits long.
+    -keyout: This line tells OpenSSL where to place the generated private key file that we are creating.
+    -out: This tells OpenSSL where to place the certificate that we are creating.
+
+Country Name (2 letter code) [XX]:US
+State or Province Name (full name) []:Example
+Locality Name (eg, city) [Default City]:Example 
+Organization Name (eg, company) [Default Company Ltd]:Example Inc
+Organizational Unit Name (eg, section) []:Example Dept
+Common Name (eg, your name or your server's hostname) []:your_domain_or_ip
+Email Address []:webmaster@example.com
+
+#### Step 3 — Configure Apache to Use SSL
+
+
+sudo nano /etc/apache2/sites-available/your_domain_or_ip.conf
+
+	<VirtualHost *:443>
+   ServerName your_domain_or_ip
+   DocumentRoot /var/www/your_domain_or_ip
+
+   SSLEngine on
+   SSLCertificateFile /etc/ssl/certs/apache-selfsigned.crt
+   SSLCertificateKeyFile /etc/ssl/private/apache-selfsigned.key
+      </VirtualHost>
+
+sudo mkdir /var/www/your_domain_or_ip
+
+sudo nano /var/www/your_domain_or_ip/index.html
+
+
+<h1>it worked!</h1>
+
+sudo a2ensite your_domain_or_ip.conf
+
+sudo apache2ctl configtest
+
+
+Output
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 127.0.1.1. Set the 'ServerName' directive globally to suppress this message
+Syntax OK
+
+sudo systemctl reload apache2
+
+sudo ufw allow "Apache Full"
+
+#######Step 4 — Redirecting HTTP to HTTPS
+sudo nano /etc/apache2/sites-available/your_domain_or_ip.conf
+
+	<VirtualHost *:80>
+    ServerName your_domain_or_ip
+    Redirect / https://your_domain_or_ip/
+      </VirtualHost>
+
+sudo apachectl configtest
+sudo systemctl reload apache2
+
+
+
+
+

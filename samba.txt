@@ -1,0 +1,33 @@
+  101  yum install samba-client samba.x86_64 -y
+  102  systemctl restart nmb smb
+  103  systemctl enable  nmb smb
+  104  firewall-cmd --permanent --add-service=smba
+  105  firewall-cmd --permanent --add-service=samba
+  106  firewall-cmd --reload
+  107  firewall-cmd --list-all
+  108  useradd mostafa
+  109  usermod mostafa -s /sbin/nologin
+  110  smbpasswd -a mostafa
+  111  grep mostafa /etc/passwd
+  112  mkdir /testsmb
+
+
+vim /etc/samba/smb.conf
+
+...........................
+[shere]
+        comment =saba shere
+        path =testsmb
+        public =yes
+        writable =yes
+........................
+127  systemctl restart nmb smb
+  128  testparm               ----->test
+
+
+#smbclient -L localhost           -------------> dispaly shere
+
+# semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
+       # restorecon -R -v /web
+
+

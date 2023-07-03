@@ -1,0 +1,97 @@
+#!/bin/bash
+#Scripts to start services if not running
+ps -ef | grep nginx |grep -v grep > /dev/null
+if [ $? != 0 ]
+then
+       /etc/init.d/nginx start > /dev/null
+fi
+ps -ef | grep php5-fpm |grep -v grep > /dev/null
+if [ $? != 0 ]
+then
+       /etc/init.d/php5-fpm start > /dev/null
+fi
+ps -ef | grep mysql |grep -v grep > /dev/null
+if [ $? != 0 ]
+then
+       /etc/init.d/mysql start > /dev/null 
+fi
+
+
+#################################################################
+
+*/1 * * * * /opt/startifdown.sh
+
+#################################################################
+
+
+
+#!/bin/bash
+#Scripts to start services if not running
+#Specify DMGR Path Here
+DMGR=/opt/IBM/WebSphere/AppServer/profiles/Dmgr01
+#Specify Profile Path Here
+Profile=/opt/IBM/WebSphere/AppServer/profiles/AppSrv01
+ps -ef | grep dmgr |grep -v grep > /dev/null
+if [ $? != 0 ]
+then
+       $DMGR/bin/startManager.sh > /dev/null
+fi
+ps -ef | grep nodeagent |grep -v grep > /dev/null
+if [ $? != 0 ]
+then
+       $Profile/bin/startNode.sh > /dev/null
+fi
+ps -ef | grep server1 |grep -v grep > /dev/null
+if [ $? != 0 ]
+then
+       $Profile/bin/startServer.sh server1 > /dev/null
+fi
+###########################################################################################
+
+
+# vi /opt/scripts/service-monitor.sh
+
+#!/bin/bash
+serv=httpd
+sstat=stopped
+service $serv status | grep -i 'running\|stopped' | awk '{print $3}' | while read output;
+do
+echo $output
+if [ "$output" == "$sstat" ]; then
+    service $serv start
+    echo "$serv service is UP now.!" | mail -s "$serv service is DOWN and restarted now On $(hostname)" daygeek@gmail.com
+    else
+    echo "$serv service is running"
+    fi
+done
+
+
+ chmod +x /opt/scripts/service-monitor.sh
+
+
+# crontab -e
+
+*/5 * * * * /bin/bash /opt/scripts/service-monitor.sh
+
+
+
+####################################################################################
+
+---
+- name: service module demo
+  hosts: all
+  become: true
+  tasks:
+    - name: sshd restart
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+        enabled: true
+
+
+ansible-playbook  servic.yuml
+
+
+
+
+
