@@ -28,3 +28,20 @@ yum clean all
 
 
 yum install vsftpd
+
+
+..........................................................................
+
+
+Ceate a temporary yum repository configuration file /etc/yum.repos.d/ol8-temp.repo with the following as the minimum required content:
+
+[ol8_baseos_latest]
+name=Oracle Linux 8 BaseOS Latest ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/baseos/latest/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+Install oraclelinux-release-el8:
+# dnf install oraclelinux-release-el8
+Remove ol8-temp.repo and any other remaining repo files that may conflict with Oracle Linux yum server:
+# mv /etc/yum.repos.d/ol8-temp.repo /etc/yum.repos.d/ol8-temp.repo.disabled
