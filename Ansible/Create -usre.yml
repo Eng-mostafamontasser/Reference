@@ -1,0 +1,14 @@
+---
+- name: create user
+  hosts: localhost
+  become: yes
+  tasks:
+   - name: users-all
+     user:
+      name:
+      - a
+      - b
+      - c
+      state: absent
+      remove: yes
+
