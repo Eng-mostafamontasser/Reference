@@ -3,3 +3,7 @@ https://github.com/ansible-lockdown/Windows-2016-CIS
 https://github.com/AlbanAndrieu/ansible-windows/blob/master/files/ConfigureRemotingForAnsible.ps1
 
 https://www.linuxhelp.com/how-to-configure-windows-client-setup-for-ansible
+
+https://www.ansiblepilot.com/articles/configure-a-windows-host-for-ansible-ansible-winrm/
+
+
