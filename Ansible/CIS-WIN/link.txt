@@ -7,3 +7,6 @@ https://www.linuxhelp.com/how-to-configure-windows-client-setup-for-ansible
 https://www.ansiblepilot.com/articles/configure-a-windows-host-for-ansible-ansible-winrm/
 
 
+https://tungle.ca/?p=1274
+
+
