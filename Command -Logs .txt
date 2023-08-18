@@ -1,0 +1,7 @@
+The same switches around logging for sftp-server also work for internal-sftp. Here's an example from my /etc/ssh/sshd_config:
+
+Subsystem   sftp    internal-sftp -f AUTH -l INFO
+
+verify
+
+ /var/log/messages 
