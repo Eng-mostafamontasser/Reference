@@ -54,5 +54,13 @@ SSLCertificateKeyFile /etc/ssl/certs/mysitename.key
 
 
 
+##################################
+
+penssl x509 -inform PEM -in certificate.cer -out certificate.crt
+
+
+
+
+
 
 
