@@ -1,0 +1,384 @@
+Server
+###########################################################################################################################
+[ol8_UEKR7]
+name=Oracle Linux 8 UEKR7 ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/UEKR7/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+
+
+
+[ovirt-4.4]
+
+name=Latest oVirt 4.4 Release ($basearch)
+
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/ovirt44/x86_64/
+
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+enabled=1
+
+gpgcheck=1
+
+
+
+[ovirt-4.4-extra]
+
+name=oVirt 4.4 Extra ($basearch)
+
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/ovirt44/extras/$basearch/
+
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+enabled=1
+
+gpgcheck=1
+
+
+
+
+[ol8_gluster_appstream]
+
+name=Oracle Linux $releasever Gluster Appstream ($basearch)
+
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/gluster/appstream/$basearch/
+
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+gpgcheck=1
+
+enabled=1
+
+
+[KVM]
+
+name=Oracle Linux $releasever KVM ($basearch)
+
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/kvm/appstream/$basearch/
+
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+gpgcheck=1
+
+enabled=1
+
+[developer-olcne]
+
+name=Oracle Linux $releasever olcne ($basearch)
+
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/developer/olcne/$basearch/
+
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+gpgcheck=1
+
+enabled=1
+
+
+[OL8-UEKR6-RDMA]
+
+name=Oracle Linux $releasever OL8-UEKR6 ($basearch)
+
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/UEKR6/RDMA/$basearch/
+
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+gpgcheck=1
+
+enabled=1
+
+[OL8-addons]
+name=Oracle Linux $releasever OL8-addons ($basearch)
+
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/addons/$basearch/
+
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+
+gpgcheck=1
+
+enabled=1
+
+[developer1]
+name=Oracle Linux $releasever developer ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/developer/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+[mysql]
+name=Oracle Linux $releasever mysql ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/MySQL80/community/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+
+
+[oracle-1]
+name=Oracle Linux $releasever oracle ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+[oracle-2]
+name=Oracle Linux $releasever oracle-2 ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient21/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+[automation]
+name=Oracle Linux $releasever automation ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/automation/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+[ol8_baseos_latest11]
+name=Oracle Linux 8 BaseOS Latest ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/baseos/latest/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+[ol8_developer_EPEL]
+name=Oracle Linux $releasever EPEL Packages for Development ($basearch)
+baseurl=https://yum$ociregion.$ocidomain/repo/OracleLinux/OL8/developer/EPEL/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+
+[ol8_developer_EPEL_modular]
+name=Oracle Linux $releasever EPEL Modular Packages for Development ($basearch)
+baseurl=https://yum$ociregion.$ocidomain/repo/OracleLinux/OL8/developer/EPEL/modular/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=1
+
+
+
+[builder]
+name=Oracle Linux $releasever builder ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL8/distro/builder/$basearch/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+gpgcheck=1
+enabled=
+
+
+######################################################################################################################################################
+Secript 
+#################
+#!/bin/bash
+
+LOG_FILE=/u01/repo/logs/repo_sync_$(date +%Y.%m.%d).log
+
+# Remove old logs
+find /u01/repo/logs/repo_sync* -mtime +5 -delete; >> $LOG_FILE 2>&1
+
+# Sync repositories
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ol8_baseos_latest -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ol8_appstream -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ol8_UEKR6 -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ol8_UEKR7  -p /u01/repo/OracleLinux  >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ol8_gluster_appstream -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ovirt-4.4-extra -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ovirt-4.4 -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=KVM -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=developer-olcne -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=OL8-UEKR6-RDMA -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=OL8-addons -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=developer1  -p /u01/repo/OracleLinux  >> $LOG_FILE 2>&1
+
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=builder  -p /u01/repo/OracleLinux  >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=automation  -p /u01/repo/OracleLinux  >> $LOG_FILE 2>&1
+
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=oracle-1  -p /u01/repo/OracleLinux  >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=oracle-2  -p /u01/repo/OracleLinux  >> $LOG_FILE 2>&1
+
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=mysql  -p /u01/repo/OracleLinux  >> $LOG_FILE 2>&1
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ol8_developer_EPEL  -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+
+
+/usr/bin/reposync --newest-only --download-metadata --refresh --repoid=ol8_developer_EPEL_modular  -p /u01/repo/OracleLinux >> $LOG_FILE 2>&1
+
+
+
+chown -R apache:apache  /u01/repo/OracleLinux/
+
+systemctl restart httpd
+
+###########################################################################################################
+
+link
+
+ ln -s /u01/repo/OracleLinux/files/ /var/www/html/repo/OracleLinux/files/x86_64
+
+
+
+
+########################################################################################################
+
+Client
+################
+
+[ol8_baseos_latest]
+name=Oracle Linux 8 BaseOS Latest ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/ol8_baseos_latest/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[ol8_UEK6]
+name=name=Oracle Linux UEK6 $releasever Latest ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/ol8_UEKR6/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[ol8_AppStream]
+name=name=Oracle Linux AppStream $releasever epel ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/ol8_appstream/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+
+[ol8_gluster_appstream]
+name=ol8_gluster_appstream($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/ol8_gluster_appstream/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[ovirt-4.4-extra]
+name=name=Oracle ovirt-4.4-extra $releasever Latest ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/ovirt-4.4-extra/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[ovirt-4.4]
+name=name=ovirt-4.4  ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/ovirt-4.4/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+
+
+[KVM]
+name=KVM ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/KVM/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[developer-olcne]
+name=name=developer-olcne ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/developer-olcne/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[OL8-UEKR6-RDMA]
+name=name=OL8-UEKR6-RDMA($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/OL8-UEKR6-RDMA/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+
+[OL8-addons]
+name=OL8-addons ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/OL8-addons/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[developer1]
+name=name=developer1 ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/developer1/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[builder]
+name=name=builder($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/builder/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+
+
+
+[automation]
+name=automation ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/automation/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[oracle-1]
+name=name=oracle-1 ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/oracle-1/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+[oracle-2]
+name=name=oracle-2 ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/oracle-2/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+
+[ol8_developer_EPEL]
+name=ol8_developer_EPEL ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/ol8_developer_EPEL/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=0
+enabled=1
+sslverify= false
+
+
+[ol8_developer_EPEL_modular]
+name=ol8_developer_EPEL_modular ($basearch)
+baseurl=https://mcprdyumol8/repo/OracleLinux/ol8_developer_EPEL_modular/x86_64/
+#gpgkey=https://mcprdyum.mcf.local/RPM-GPG-KEY-oracle-ol8
+gpgcheck=1
+enabled=0
+sslverify= false
+
+
+
+
+
+
+
+
+
+
+
+
+
