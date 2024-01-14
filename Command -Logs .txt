@@ -1,7 +1,7 @@
 The same switches around logging for sftp-server also work for internal-sftp. Here's an example from my /etc/ssh/sshd_config:
 
 Subsystem   sftp    internal-sftp -f AUTH -l INFO
-
+ systemctl restart sshd
 verify
 
- /var/log/messages 
+ tail -f /var/log/messages  |grep sftp
