@@ -5,3 +5,14 @@ Subsystem   sftp    internal-sftp -f AUTH -l INFO
 verify
 
  tail -f /var/log/messages  |grep sftp
+
+
+............................................................
+
+Clear RAM Memory Cache, Buffer and Swap Space on Linux
+
+sudo sh -c 'echo 1 >  /proc/sys/vm/drop_caches'
+sudo sh -c 'echo 2 >  /proc/sys/vm/drop_caches'
+  sudo sh -c 'echo 3 >  /proc/sys/vm/drop_caches'
+ sudo sync && echo 1 > /proc/sys/vm/drop_caches
+
