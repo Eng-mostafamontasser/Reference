@@ -5,6 +5,9 @@
 
 
 ***resoveproblem openshift**
+https://github.com/crc-org/crc/issues/2674
+
+
 You can run crc config set skip-check-daemon-systemd-unit true and crc config set skip-check-daemon-systemd-sockets true to avoid these errors which are specific to rhel7
 
   
