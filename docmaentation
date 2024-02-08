@@ -2,4 +2,9 @@
 
   https://www.cherryservers.com/blog/how-to-use-variables-in-ansible-playbooks
 
+
+
+***resoveproblem openshift**
+You can run crc config set skip-check-daemon-systemd-unit true and crc config set skip-check-daemon-systemd-sockets true to avoid these errors which are specific to rhel7
+
   
