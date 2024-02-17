@@ -1,0 +1,60 @@
+    1  nmcli networking off
+    2  nmcli networking on
+    3  clear
+    4  apt update
+    5  ip add
+    6  wget https://repo.zabbix.com/zabbix/6.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.4-1+ubuntu20.04_all.deb
+    7  ls
+    8  dpkg -i zabbix-release_6.4-1+ubuntu20.04_all.deb
+    9  apt update
+   10  apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent
+   11  mysql -uroot -p
+   12  mysql -uroot -p Asd@@123
+   13  mysql -uroot -p
+   14  vi /var/run/mysqld/mysqld.sock
+   15  systemctl status sql*
+   16  systemctl enable zabbix-server zabbix-agent apache2
+   17  systemctl restart zabbix-server zabbix-agent apache2
+   18  mysql -uroot -p
+   19  apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent
+   20  apt update
+   21  main/binary-i386/Packages
+   22  find / -name zabbix
+   23  vi /media/zabbix
+   24  vi /var/lib/AccountsService/users/zabbix
+   25  mysql -uroot -p
+   26  cd /var/run/mysqld/
+   27  ip add
+   28  systemctl -l | grep sql
+   29  sudo apt install apache2
+   30  ufw disable
+   31  mysql -uroot -p
+   32  sudo apt install php php-cgi php-common libapache2-mod-php php-mbstring php-net-socket php-gd php-xml-util php-mysql php-bcmath
+   33  sudo vim /etc/php/*/apache2/php.ini
+   34  sudo vi /etc/php/*/apache2/php.ini
+   35  sudo mysql -u root
+   36  sudo mysql -u zabbix
+   37  sudo apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent
+   38  zcat /usr/share/doc/zabbix-proxy-mysql/schema.sql.gz | mysql -uzabbix -p 'StronDBPassw0rd'
+   39  sudo systemctl restart zabbix-server
+   40  sudo apt install mariadb-server
+   41  mysql -uroot -p
+   42  sudo apt-get install mysql-server
+   43  mysql -uroot -p
+   44  zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p zabbix
+   45  mysql -uroot -p
+   46  vi zabbix-release_6.4-1+ubuntu20.04_all.deb /etc/zabbix/zabbix_server.conf
+   47  vi /etc/zabbix/zabbix_server.conf
+   48  apt install vim
+   49  systemctl enable zabbix-server zabbix-agent apache2
+   50  vim zabbix-release_6.4-1+ubuntu20.04_all.deb /etc/zabbix/zabbix_server.conf
+   51  vim /etc/zabbix/zabbix_server.conf
+   52  vim /etc/zabbix/zabbix_server.conf
+   53  ip add
+   54  sudo apt update
+   55  sudo apt remove docker docker-engine docker.io 2>/dev/null
+   56  apt update
+   57  netplan apply
+   58  ip a
+   59  history
+   60  mysql -uroot -p
