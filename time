@@ -1,0 +1,2 @@
+set-ntp 0
+timedatectl set-time YYYY-MM-DD HH:MM:SS
