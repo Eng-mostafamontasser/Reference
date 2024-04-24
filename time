@@ -1,2 +1,6 @@
 set-ntp 0
 timedatectl set-time YYYY-MM-DD HH:MM:SS
+zdump -v Africa/Cairo | grep 2023
+
+yum update tzdata
+timedatectl
