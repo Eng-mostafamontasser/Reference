@@ -1,0 +1,46 @@
+examble :-
+
+$ sudo dnf update 
+CentOS Stream 8 - AppStream                                                                                                  8.3 MB/s |  18 MB     00:02    
+CentOS Stream 8 - BaseOS                                                                                                      13 MB/s |  16 MB     00:01    
+CentOS Stream 8 - Extras                                                                                                      69 kB/s |  16 kB     00:00    
+Google Compute Engine                                                                                                         20 kB/s | 9.4 kB     00:00    
+Google Cloud SDK                                                                                                              24 MB/s |  43 MB     00:01    
+Killed
+
+
+
+.........................
+
+
+Resolve Problem :- 
+
+sudo fallocate -l 1G /swapfile
+sudo mkswap /swapfile
+sudo chmod 0600 /swapfile
+sudo swapon /swapfile
+
+..........
+
+
+vi /etc/fstab
+
+/swapfile none                    swap    defaults        0 0
+
+
+.....................................
+
+trablehsoot 
+..
+
+ swapon -s
+vmstat
+
+ cat /proc/swaps
+
+
+
+
+
+
+
