@@ -1,0 +1,13 @@
+network:
+     version: 2
+     renderer: networkd
+     ethernets:
+        ens160:
+          dhcp4: no
+          dhcp4: no
+          addresses: [198.192.11.1/24]
+          gateway4: 198.192.11.1
+          nameservers:
+            addresses:
+              - 198.192.11.1
+              - 9.9.9.9
